@@ -40,7 +40,8 @@ class Settings
             $all = $stmt->fetchAll(\PDO::FETCH_ASSOC);
             $settings = array_shift($all);
             if($settings!=null && !empty($settings['value'])) {
-                
+                unset($settings['id']);
+                unset($settings['visitor_id']);
                 $settings['value'] = unserialize($settings['value']);
                 //var_dump($settings);
             }
