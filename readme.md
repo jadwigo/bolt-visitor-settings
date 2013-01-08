@@ -1,7 +1,15 @@
 Visitor settings
 =======================
 
-Store settings for a user
+Store settings for a visitor
+
+Installation
+=======================
+Download and extract the extension to a directory called VisitorSettings in your Bolt extension directory.
+
+This extensions requires that the Visitors extension ( https://github.com/jadwigo/bolt-visitors ) is installed and working.
+
+Create the database tables manually by using the queries below.
 
 
 Database
