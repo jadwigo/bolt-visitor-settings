@@ -89,7 +89,7 @@ function get(Silex\Application $app) {
 
         return new Response(json_encode($settings), 200, array('Cache-Control' => 's-maxage=3600, public'));
     } else {
-        return new Response(json_encode(false), 200, array('Cache-Control' => 's-maxage=3600, public'));
+        return new Response(json_encode(false), 404, array('Cache-Control' => 's-maxage=3600, public'));
     }
 }
 
