@@ -75,8 +75,7 @@ class Controller
 
             return $app->json($settings, 200);
         } else {
-
-            return $app->json(false, 404);
+            return $app->json(array('error'=>'unknown visitor'), 404);
         }
     }
     
@@ -93,16 +92,28 @@ class Controller
         //$app['log']->add(\util::var_dump($recognizedvisitor, true));
         if($recognizedvisitor) {
             $visitor_id = $recognizedvisitor['id'];
-            $key = \util::get_var('key', false);
-            $value = \util::get_var('value', false);
+
+            $posted = \util::post_var('key', false);
+            if(!empty($posted)) {
+                $key = \util::post_var('key', false);
+                $value = \util::post_var('value', false);
+                $return = 'OK';
+            } else {
+                // no POST key found, so let's try anything
+                $key = \util::request_var('key', false);
+                $value = \util::request_var('value', false);
+                $return = 'OK (but only for debugging, you should POST)';
+            }
 
             //$app['log']->add(\util::var_dump($key, true));
             //$app['log']->add(\util::var_dump($value, true));
             $visitorsettings = new \VisitorSettings\Settings($app);
             $visitorsettings->update( $visitor_id, $key, $value );
+        } else {
+            return $app->json(array('error'=>'unknown visitor'), 404);
         }
 
-        return $app->json('OK', 201);
+        return $app->json($return, 201);
     }
 
 }
