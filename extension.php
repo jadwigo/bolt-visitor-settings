@@ -98,11 +98,16 @@ class Controller
                 $key = \util::post_var('key', false);
                 $value = \util::post_var('value', false);
                 $return = 'OK';
-            } else {
+            } elseif($app['debug']) {
                 // no POST key found, so let's try anything
                 $key = \util::request_var('key', false);
                 $value = \util::request_var('value', false);
                 $return = 'OK (but only for debugging, you should POST)';
+            } else {
+                // no POST key found, so let's try anything
+                $key = \util::request_var('key', false);
+                $value = \util::request_var('value', false);
+                return $app->json(array('error'=>'GET not allowed, you should use POST'), 403);
             }
 
             //$app['log']->add(\util::var_dump($key, true));
