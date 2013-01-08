@@ -37,83 +37,91 @@ function info()
  */
 function init($app)
 {
+    // autoloader does not pick it up automagically
+    require_once( __DIR__."/src/Settings/Settings.php" );
 
     // define twig functions and vars
-    $app['twig']->addFunction('visitorsettings', new \Twig_Function_Function('VisitorSettings\visitorsettings'));
+    $app['twig']->addFunction('visitorsettings', new \Twig_Function_Function('VisitorSettings\Controller::visitorsettings'));
 
     // Endpoint for VisitorSettings to get and put settings
-    $app->match("/visitorsettings/get", '\VisitorSettings\get')
-        ->before('Bolt\Controllers\Frontend::before')
+    $app->match("/visitorsettings/get", '\VisitorSettings\Controller::get')
         ->bind('visitorsettingsget');
-    $app->match("/visitorsettings/put", '\VisitorSettings\put')
-        ->before('Bolt\Controllers\Frontend::before')
+    $app->match("/visitorsettings/put", '\VisitorSettings\Controller::put')
         ->bind('visitorsettingsput');
 }
 
-/**
- * load all or some visitor settings
- */
-function visitorsettings(Silex\Application $app) {
-    // load visitor id by session token
-    $recognizedvisitor = \Visitors\checkvisitor($app);
+class Controller
+{
 
-    if($recognizedvisitor) {
-        $visitor_id = $recognizedvisitor['visitor_id'];
-        $key = \util::get_var('key', false);
-
-        $visitorsettings = new \VisitorSettings\Settings($app);
-        $settings = $visitorsettings->load( $visitor_id, $key );
-
-        return $settings;
-    } else {
-        return false;
+    /**
+     * load all or some visitor settings
+     */
+    function visitorsettings(Silex\Application $app) {
+        // load visitor id by session token
+        $recognizedvisitor = \Visitors\checkvisitor($app);
+    
+        if($recognizedvisitor) {
+            $visitor_id = $recognizedvisitor['id'];
+            $key = \util::get_var('key', false);
+    
+            $visitorsettings = new \VisitorSettings\Settings($app);
+            $settings = $visitorsettings->load( $visitor_id, $key );
+    
+            return $settings;
+        } else {
+            return false;
+        }
     }
-}
-
-/**
- * Visitor settings endpoint
- *
- * This endpoint loads a value for a given sessiontoken and key
- */
-function get(Silex\Application $app) {
-    // load visitor id by session token
-    $recognizedvisitor = \Visitors\checkvisitor($app);
-
-    $app['log']->add(\util::var_dump($recognizedvisitor, true));
-    if($recognizedvisitor) {
-        $visitor_id = $recognizedvisitor['visitor_id'];
-        $key = \util::get_var('key', false);
-
-        $visitorsettings = new \VisitorSettings\Settings($app);
-        $settings = $visitorsettings->load( $visitor_id, $key );
-
-        return new Response(json_encode($settings), 200, array('Cache-Control' => 's-maxage=3600, public'));
-    } else {
-        return new Response(json_encode(false), 404, array('Cache-Control' => 's-maxage=3600, public'));
+    
+    /**
+     * Visitor settings endpoint
+     *
+     * This endpoint loads a value for a given sessiontoken and key
+     */
+    function get(Silex\Application $app) {
+        // load visitor id by session token
+        $recognizedvisitor = \Visitors\checkvisitor($app);
+    
+        //$app['log']->add(\util::var_dump($recognizedvisitor, true));
+        if($recognizedvisitor) {
+            $visitor_id = $recognizedvisitor['id'];
+            $key = \util::get_var('key', false);
+    
+            $visitorsettings = new \VisitorSettings\Settings($app);
+            $settings = $visitorsettings->load( $visitor_id, $key );
+    
+            return new Response(json_encode($settings), 200, array('Cache-Control' => 's-maxage=3600, public'));
+        } else {
+            return new Response(json_encode(false), 404, array('Cache-Control' => 's-maxage=3600, public'));
+        }
     }
-}
-
-
-/**
- * Visitor settings endpoint
- *
- * This endpoint saves a key-value for a given sessiontoken
- */
-function put(Silex\Application $app) {
-    // load visitor id by session token
-    $recognizedvisitor = \Visitors\checkvisitor($app);
-
-    if($recognizedvisitor) {
-        $visitor_id = $recognizedvisitor['visitor_id'];
-        $key = \util::get_var('key', false);
-        $value = \util::get_var('value', false);
-
-        $visitorsettings = new \VisitorSettings\Settings($app);
-        $visitorsettings->update( $visitor_id, $key, $value );
+    
+    
+    /**
+     * Visitor settings endpoint
+     *
+     * This endpoint saves a key-value for a given sessiontoken
+     */
+    function put(Silex\Application $app) {
+        // load visitor id by session token
+        $recognizedvisitor = \Visitors\checkvisitor($app);
+    
+        //$app['log']->add(\util::var_dump($recognizedvisitor, true));
+        if($recognizedvisitor) {
+            $visitor_id = $recognizedvisitor['id'];
+            $key = \util::get_var('key', false);
+            $value = \util::get_var('value', false);
+    
+    
+            $app['log']->add(\util::var_dump($key, true));
+            $app['log']->add(\util::var_dump($value, true));
+            $visitorsettings = new \VisitorSettings\Settings($app);
+            $visitorsettings->update( $visitor_id, $key, $value );
+        }
+    
+        return new Response(json_encode('OK'), 200, array('Cache-Control' => 's-maxage=3600, public'));
     }
 
-    return new Response(json_encode('OK'), 200, array('Cache-Control' => 's-maxage=3600, public'));
 }
-
 
 

@@ -39,7 +39,11 @@ class Settings
 
             $all = $stmt->fetchAll(\PDO::FETCH_ASSOC);
             $settings = array_shift($all);
-            $settings['value'] = unserialize($settings['value']);
+            if($settings!=null && !empty($settings['value'])) {
+                
+                $settings['value'] = unserialize($settings['value']);
+                //var_dump($settings);
+            }
             return $settings;
         } else {
            return false;
@@ -56,11 +60,11 @@ class Settings
 
             // update if not existing yet
             // inserting if new
-            if($exists!==false) {
+            if($exists!=false && is_array($exists)) {
                 $content = array(
                     'visitor_id' => $visitor_id, 
                     'key' => $key, 
-                    'value' => $value, 
+                    'value' => serialize($value), 
                 );
                 return $this->db->update($tablename, $content, array('id' => $exists['id']));
             } else {
