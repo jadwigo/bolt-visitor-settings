@@ -50,7 +50,12 @@ function init($app)
  * This endpoint loads a value for a given sessiontoken and key
  */
 function get(Silex\Application $app) {
-
+    // load visitor id by session token
+    $visitor_id = 1;
+    $key = \util::get_var('key', false);
+    
+    $visitorsettings = new \VisitorSettings\Settings($app);
+    $visitorsettings->load( $visitor_id, $key );
 }
 
 
@@ -60,6 +65,13 @@ function get(Silex\Application $app) {
  * This endpoint saves a key-value for a given sessiontoken
  */
 function put(Silex\Application $app) {
+    // load visitor id by session token
+    $visitor_id = 1;
+    $key = \util::get_var('key', false);
+    $value = \util::get_var('value', false);
+
+    $visitorsettings = new \VisitorSettings\Settings($app);
+    $visitorsettings->update( $visitor_id, $key, $value );
 
 }
 
