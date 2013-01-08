@@ -51,13 +51,19 @@ function init($app)
  */
 function get(Silex\Application $app) {
     // load visitor id by session token
-    $visitor_id = 1;
-    $key = \util::get_var('key', false);
+    $recognizedvisitor = \Visitors\checkvisitor($app);
     
-    $visitorsettings = new \VisitorSettings\Settings($app);
-    $settings = $visitorsettings->load( $visitor_id, $key );
-    
-    return $settings;
+    if($recognizedvisitor) {
+        $visitor_id = $recognizedvisitor['visitor_id'];
+        $key = \util::get_var('key', false);
+        
+        $visitorsettings = new \VisitorSettings\Settings($app);
+        $settings = $visitorsettings->load( $visitor_id, $key );
+        
+        return $settings;
+    } else {
+        return false;
+    }
 }
 
 
@@ -68,13 +74,16 @@ function get(Silex\Application $app) {
  */
 function put(Silex\Application $app) {
     // load visitor id by session token
-    $visitor_id = 1;
-    $key = \util::get_var('key', false);
-    $value = \util::get_var('value', false);
-
-    $visitorsettings = new \VisitorSettings\Settings($app);
-    $visitorsettings->update( $visitor_id, $key, $value );
-
+    $recognizedvisitor = \Visitors\checkvisitor($app);
+    
+    if($recognizedvisitor) {
+        $visitor_id = $recognizedvisitor['visitor_id'];
+        $key = \util::get_var('key', false);
+        $value = \util::get_var('value', false);
+    
+        $visitorsettings = new \VisitorSettings\Settings($app);
+        $visitorsettings->update( $visitor_id, $key, $value );
+    }
 }
 
 
