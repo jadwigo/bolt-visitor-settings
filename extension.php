@@ -55,7 +55,9 @@ function get(Silex\Application $app) {
     $key = \util::get_var('key', false);
     
     $visitorsettings = new \VisitorSettings\Settings($app);
-    $visitorsettings->load( $visitor_id, $key );
+    $settings = $visitorsettings->load( $visitor_id, $key );
+    
+    return $settings;
 }
 
 

@@ -38,7 +38,9 @@ class Settings
             $stmt->execute();
 
             $all = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-            return array_shift($all);
+            $settings = array_shift($all);
+			$settings['value'] = unserialize($settings['value']);
+			return $settings;
         } else {
            return false;
         }
@@ -56,16 +58,16 @@ class Settings
 			// inserting if new
 			if($exists!==false) {
 				$content = array(
-					'visitor_id' =>  $visitor_id, 
+					'visitor_id' => $visitor_id, 
 					'key' => $key, 
 					'value' => $value, 
 				);
 				return $this->db->update($tablename, $content, array('id' => $exists['id']));
 			} else {
 				$content = array(
-					'visitor_id' =>  $visitor_id, 
+					'visitor_id' => $visitor_id, 
 					'key' => $key, 
-					'value' => $value, 
+					'value' => serialize($value), 
 				);
 				return $this->db->insert($tablename, $content);				
 			}
