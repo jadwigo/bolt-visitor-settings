@@ -79,6 +79,7 @@ function get(Silex\Application $app) {
     // load visitor id by session token
     $recognizedvisitor = \Visitors\checkvisitor($app);
 
+    $app['log']->add(\util::var_dump($recognizedvisitor, true));
     if($recognizedvisitor) {
         $visitor_id = $recognizedvisitor['visitor_id'];
         $key = \util::get_var('key', false);
@@ -86,9 +87,9 @@ function get(Silex\Application $app) {
         $visitorsettings = new \VisitorSettings\Settings($app);
         $settings = $visitorsettings->load( $visitor_id, $key );
 
-        return $settings;
+        return new Response(json_encode($settings), 200, array('Cache-Control' => 's-maxage=3600, public'));
     } else {
-        return false;
+        return new Response(json_encode(false), 200, array('Cache-Control' => 's-maxage=3600, public'));
     }
 }
 
@@ -110,6 +111,8 @@ function put(Silex\Application $app) {
         $visitorsettings = new \VisitorSettings\Settings($app);
         $visitorsettings->update( $visitor_id, $key, $value );
     }
+
+    return new Response(json_encode('OK'), 200, array('Cache-Control' => 's-maxage=3600, public'));
 }
 
 
