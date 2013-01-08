@@ -20,7 +20,7 @@ function info()
         'type' => "General",
         'first_releasedate' => "2013-01-08",
         'latest_releasedate' => "2013-01-08",
-        'dependancies' => "",
+        'dependencies' => "[ Visitors ]",
         'priority' => 10
     );
 
@@ -29,14 +29,39 @@ function info()
 }
 
 /**
- * Initialize Visitor settings. Called during bootstrap phase.
+ * Initialize VisitorSettings. Called during bootstrap phase.
  */
 function init($app)
 {
 
+    // Endpoint for VisitorSettings to get and put settings
+    $app->match("/visitorsettings/get", '\VisitorSettings\get')
+        ->before('Bolt\Controllers\Frontend::before')
+        ->bind('visitorsettingsget');
+    $app->match("/visitorsettings/put", '\VisitorSettings\put')
+        ->before('Bolt\Controllers\Frontend::before')
+        ->bind('visitorsettingsput');
+}
+
+
+/**
+ * Visitor settings endpoint
+ *
+ * This endpoint loads a value for a given sessiontoken and key
+ */
+function get(Silex\Application $app) {
 
 }
 
+
+/**
+ * Visitor settings endpoint
+ *
+ * This endpoint saves a key-value for a given sessiontoken
+ */
+function put(Silex\Application $app) {
+
+}
 
 
 
