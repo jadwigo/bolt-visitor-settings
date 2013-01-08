@@ -69,8 +69,6 @@ class Settings
                     'settings_key' => $key, 
                     'value' => serialize($value), 
                 );
-                var_dump($exists);
-                var_dump($content);
                 return $this->db->update($tablename, $content, array('id' => $exists['id']));
             } else {
                 $content = array(
