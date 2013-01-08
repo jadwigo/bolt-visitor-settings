@@ -38,8 +38,7 @@ function info()
 function init($app)
 {
     // autoloader does not pick it up automagically
-    require_once( __DIR__."/src/Settings/Settings.php" );
-
+    require_once __DIR__."/src/Settings/Settings.php";
 
     // Endpoint for VisitorSettings to get and put settings
     $visitorsettings_controller = $app['controllers_factory'];
