@@ -3,6 +3,10 @@
 
 namespace VisitorSettings;
 
+use Silex;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+
 /**
  * Info block for Visitor settings Extension.
  */
@@ -34,6 +38,9 @@ function info()
 function init($app)
 {
 
+    // define twig functions and vars
+    $app['twig']->addFunction('visitorsettings', new \Twig_Function_Function('VisitorSettings\visitorsettings'));
+
     // Endpoint for VisitorSettings to get and put settings
     $app->match("/visitorsettings/get", '\VisitorSettings\get')
         ->before('Bolt\Controllers\Frontend::before')
@@ -43,6 +50,25 @@ function init($app)
         ->bind('visitorsettingsput');
 }
 
+/**
+ * load all or some visitor settings
+ */
+function visitorsettings(Silex\Application $app) {
+    // load visitor id by session token
+    $recognizedvisitor = \Visitors\checkvisitor($app);
+
+    if($recognizedvisitor) {
+        $visitor_id = $recognizedvisitor['visitor_id'];
+        $key = \util::get_var('key', false);
+
+        $visitorsettings = new \VisitorSettings\Settings($app);
+        $settings = $visitorsettings->load( $visitor_id, $key );
+
+        return $settings;
+    } else {
+        return false;
+    }
+}
 
 /**
  * Visitor settings endpoint
@@ -52,14 +78,14 @@ function init($app)
 function get(Silex\Application $app) {
     // load visitor id by session token
     $recognizedvisitor = \Visitors\checkvisitor($app);
-    
+
     if($recognizedvisitor) {
         $visitor_id = $recognizedvisitor['visitor_id'];
         $key = \util::get_var('key', false);
-        
+
         $visitorsettings = new \VisitorSettings\Settings($app);
         $settings = $visitorsettings->load( $visitor_id, $key );
-        
+
         return $settings;
     } else {
         return false;
@@ -75,12 +101,12 @@ function get(Silex\Application $app) {
 function put(Silex\Application $app) {
     // load visitor id by session token
     $recognizedvisitor = \Visitors\checkvisitor($app);
-    
+
     if($recognizedvisitor) {
         $visitor_id = $recognizedvisitor['visitor_id'];
         $key = \util::get_var('key', false);
         $value = \util::get_var('value', false);
-    
+
         $visitorsettings = new \VisitorSettings\Settings($app);
         $visitorsettings->update( $visitor_id, $key, $value );
     }

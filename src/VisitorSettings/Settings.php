@@ -27,8 +27,8 @@ class Settings
     // check if sessions table exists - if not create it
     // CREATE TABLE 'bolt_visitors_settings' ('id' INTEGER PRIMARY KEY NOT NULL, 'visitor_id' INTEGER, 'key' VARCHAR(64), 'value' TEXT);
     
-	// load value for visitor and key
-	public function load($visitor_id, $key = null) 
+    // load value for visitor and key
+    public function load($visitor_id, $key = null) 
     {
         if($visitor_id && $key) {
             $sql = "SELECT * from " . $this->prefix ."visitors_settings WHERE visitor_id = :vid AND key = :key";
@@ -39,39 +39,39 @@ class Settings
 
             $all = $stmt->fetchAll(\PDO::FETCH_ASSOC);
             $settings = array_shift($all);
-			$settings['value'] = unserialize($settings['value']);
-			return $settings;
+            $settings['value'] = unserialize($settings['value']);
+            return $settings;
         } else {
            return false;
         }
-	}
+    }
 
-	// update existing visitor session
-	public function update($visitor_id, $key = null, $value = null) 
+    // update existing visitor session
+    public function update($visitor_id, $key = null, $value = null) 
     {
         if($visitor_id && $key && $value) {
-			$exists = $this->load($visitor_id, $key);
+            $exists = $this->load($visitor_id, $key);
 
-			$tablename =  $this->prefix ."visitors_settings";
+            $tablename =  $this->prefix ."visitors_settings";
 
-			// update if not existing yet
-			// inserting if new
-			if($exists!==false) {
-				$content = array(
-					'visitor_id' => $visitor_id, 
-					'key' => $key, 
-					'value' => $value, 
-				);
-				return $this->db->update($tablename, $content, array('id' => $exists['id']));
-			} else {
-				$content = array(
-					'visitor_id' => $visitor_id, 
-					'key' => $key, 
-					'value' => serialize($value), 
-				);
-				return $this->db->insert($tablename, $content);				
-			}
+            // update if not existing yet
+            // inserting if new
+            if($exists!==false) {
+                $content = array(
+                    'visitor_id' => $visitor_id, 
+                    'key' => $key, 
+                    'value' => $value, 
+                );
+                return $this->db->update($tablename, $content, array('id' => $exists['id']));
+            } else {
+                $content = array(
+                    'visitor_id' => $visitor_id, 
+                    'key' => $key, 
+                    'value' => serialize($value), 
+                );
+                return $this->db->insert($tablename, $content);                
+            }
         }
-	}
+    }
 
 }
