@@ -78,8 +78,7 @@ class Controller
             return $app->json(array('error'=>'unknown visitor'), 404);
         }
     }
-    
-    
+
     /**
      * Visitor settings endpoint
      *
