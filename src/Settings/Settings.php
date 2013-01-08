@@ -28,7 +28,7 @@ class Settings
     // CREATE TABLE 'bolt_visitors_settings' ('id' INTEGER PRIMARY KEY NOT NULL, 'visitor_id' INTEGER, 'key' VARCHAR(64), 'value' TEXT);
     
     // load value for visitor and key
-    public function load($visitor_id, $key = null) 
+    public function load($visitor_id, $key = null, $clean = true) 
     {
         if($visitor_id && $key) {
             $sql = "SELECT * from " . $this->prefix ."visitors_settings WHERE visitor_id = :vid AND `settings_key` = :key";
@@ -40,8 +40,10 @@ class Settings
             $all = $stmt->fetchAll(\PDO::FETCH_ASSOC);
             $settings = array_shift($all);
             if($settings!=null && !empty($settings['value'])) {
-                unset($settings['id']);
-                unset($settings['visitor_id']);
+                if($clean) {
+                    unset($settings['id']);
+                    unset($settings['visitor_id']);
+                }
                 $settings['value'] = unserialize($settings['value']);
                 //var_dump($settings);
             }
@@ -55,7 +57,7 @@ class Settings
     public function update($visitor_id, $key = null, $value = null) 
     {
         if($visitor_id && $key && $value) {
-            $exists = $this->load($visitor_id, $key);
+            $exists = $this->load($visitor_id, $key, false); // get the unclean version
 
             $tablename =  $this->prefix ."visitors_settings";
 
@@ -67,6 +69,8 @@ class Settings
                     'settings_key' => $key, 
                     'value' => serialize($value), 
                 );
+                var_dump($exists);
+                var_dump($content);
                 return $this->db->update($tablename, $content, array('id' => $exists['id']));
             } else {
                 $content = array(
