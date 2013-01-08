@@ -40,9 +40,6 @@ function init($app)
     // autoloader does not pick it up automagically
     require_once( __DIR__."/src/Settings/Settings.php" );
 
-    // define twig functions and vars
-    $app['twig']->addFunction('visitorsettings', new \Twig_Function_Function('VisitorSettings\Controller::visitorsettings'));
-
     // Endpoint for VisitorSettings to get and put settings
     $app->match("/visitorsettings/get", '\VisitorSettings\Controller::get')
         ->bind('visitorsettingsget');
@@ -52,27 +49,6 @@ function init($app)
 
 class Controller
 {
-
-    /**
-     * load all or some visitor settings
-     */
-    function visitorsettings(Silex\Application $app) {
-        // load visitor id by session token
-        $recognizedvisitor = \Visitors\checkvisitor($app);
-
-        if($recognizedvisitor) {
-            $visitor_id = $recognizedvisitor['id'];
-            $key = \util::get_var('key', false);
-
-            $visitorsettings = new \VisitorSettings\Settings($app);
-            $settings = $visitorsettings->load( $visitor_id, $key );
-
-            return $settings;
-        } else {
-            return false;
-        }
-    }
-
     /**
      * Visitor settings endpoint
      *
