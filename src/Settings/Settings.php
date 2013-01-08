@@ -31,7 +31,7 @@ class Settings
     public function load($visitor_id, $key = null) 
     {
         if($visitor_id && $key) {
-            $sql = "SELECT * from " . $this->prefix ."visitors_settings WHERE visitor_id = :vid AND key = :key";
+            $sql = "SELECT * from " . $this->prefix ."visitors_settings WHERE visitor_id = :vid AND `settings_key` = :key";
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue("vid", $visitor_id);
             $stmt->bindValue("key", $key);
@@ -63,14 +63,14 @@ class Settings
             if($exists!=false && is_array($exists)) {
                 $content = array(
                     'visitor_id' => $visitor_id, 
-                    'key' => $key, 
+                    'settings_key' => $key, 
                     'value' => serialize($value), 
                 );
                 return $this->db->update($tablename, $content, array('id' => $exists['id']));
             } else {
                 $content = array(
                     'visitor_id' => $visitor_id, 
-                    'key' => $key, 
+                    'settings_key' => $key, 
                     'value' => serialize($value), 
                 );
                 return $this->db->insert($tablename, $content);                
