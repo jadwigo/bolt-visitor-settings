@@ -59,20 +59,20 @@ class Controller
     function visitorsettings(Silex\Application $app) {
         // load visitor id by session token
         $recognizedvisitor = \Visitors\checkvisitor($app);
-    
+
         if($recognizedvisitor) {
             $visitor_id = $recognizedvisitor['id'];
             $key = \util::get_var('key', false);
-    
+
             $visitorsettings = new \VisitorSettings\Settings($app);
             $settings = $visitorsettings->load( $visitor_id, $key );
-    
+
             return $settings;
         } else {
             return false;
         }
     }
-    
+
     /**
      * Visitor settings endpoint
      *
@@ -81,18 +81,20 @@ class Controller
     function get(Silex\Application $app) {
         // load visitor id by session token
         $recognizedvisitor = \Visitors\checkvisitor($app);
-    
+
         //$app['log']->add(\util::var_dump($recognizedvisitor, true));
         if($recognizedvisitor) {
             $visitor_id = $recognizedvisitor['id'];
             $key = \util::get_var('key', false);
-    
+
             $visitorsettings = new \VisitorSettings\Settings($app);
             $settings = $visitorsettings->load( $visitor_id, $key );
-    
-            return new Response(json_encode($settings), 200, array('Cache-Control' => 's-maxage=3600, public'));
+
+            return $app->json($settings, 200);
+            //return new Response(json_encode($settings), 200, array('Cache-Control' => 's-maxage=3600, public'));
         } else {
-            return new Response(json_encode(false), 404, array('Cache-Control' => 's-maxage=3600, public'));
+            return $app->json(false, 404);
+            //return new Response(json_encode(false), 404, array('Cache-Control' => 's-maxage=3600, public'));
         }
     }
     
@@ -105,21 +107,21 @@ class Controller
     function put(Silex\Application $app) {
         // load visitor id by session token
         $recognizedvisitor = \Visitors\checkvisitor($app);
-    
+
         //$app['log']->add(\util::var_dump($recognizedvisitor, true));
         if($recognizedvisitor) {
             $visitor_id = $recognizedvisitor['id'];
             $key = \util::get_var('key', false);
             $value = \util::get_var('value', false);
-    
-    
-            $app['log']->add(\util::var_dump($key, true));
-            $app['log']->add(\util::var_dump($value, true));
+
+            //$app['log']->add(\util::var_dump($key, true));
+            //$app['log']->add(\util::var_dump($value, true));
             $visitorsettings = new \VisitorSettings\Settings($app);
             $visitorsettings->update( $visitor_id, $key, $value );
         }
-    
-        return new Response(json_encode('OK'), 200, array('Cache-Control' => 's-maxage=3600, public'));
+
+        return $app->json('OK', 201);
+        //return new Response(json_encode('OK'), 200, array('Cache-Control' => 's-maxage=3600, public'));
     }
 
 }
