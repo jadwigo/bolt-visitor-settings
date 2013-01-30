@@ -43,6 +43,8 @@ class Settings
                 if($clean) {
                     unset($settings['id']);
                     unset($settings['visitor_id']);
+                    $settings['key'] = $settings['settings_key'];
+                    unset($settings['settings_key']);
                 }
                 $settings['value'] = unserialize($settings['value']);
                 //var_dump($settings);
@@ -53,6 +55,36 @@ class Settings
         }
     }
 
+    // load value for visitor and key
+    public function settingslist($visitor_id, $clean = true) 
+    {
+        if($visitor_id) {
+            $sql = "SELECT * from " . $this->prefix ."visitors_settings WHERE visitor_id = :vid";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindValue("vid", $visitor_id);
+            $stmt->execute();
+
+            while ($setting = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+
+                if($setting!=null) {
+                    if($clean) {
+                        unset($setting['id']);
+                        unset($setting['visitor_id']);
+                        $setting['key'] = $setting['settings_key'];
+                        unset($setting['settings_key']);
+                    }
+                    $setting['value'] = unserialize($setting['value']);
+                    //var_dump($settings);
+                    $outputsettings[] = $setting;
+                }
+            }
+            return $outputsettings;
+        } else {
+           return false;
+        }
+    }
+
+    
     // update existing visitor session
     public function update($visitor_id, $key = null, $value = null) 
     {
